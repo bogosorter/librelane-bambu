@@ -1,15 +1,16 @@
 import time
-from typing import List, Tuple
-from librelane.flows import Flow
-from librelane.state import State
-from librelane.steps import Step, ViewsUpdate, MetricsUpdate
-from librelane.config import Variable
-from librelane.common import Path
-
 from pathlib import Path as PPath
+
+from librelane.common.types import Path
+from librelane.config.variable import Variable
+from librelane.flows.flow import Flow
+from librelane.state.state import State
+from librelane.steps.step import MetricsUpdate, Step, ViewsUpdate
+
 bambu = PPath("~/Downloads/bambu-2026.11.AppImage").expanduser()
 
 Classic = Flow.factory.get("Classic")
+assert Classic is not None
 
 @Step.factory.register()
 class BambuStep(Step):
@@ -21,7 +22,7 @@ class BambuStep(Step):
         Variable("C_FILE", Path, "C source file for Bambu")
     ]
 
-    def run(self, state_in: State, **kwargs) -> Tuple[ViewsUpdate, MetricsUpdate]:
+    def run(self, state_in: State, **kwargs) -> tuple[ViewsUpdate, MetricsUpdate]:
         name = self.config["DESIGN_NAME"]
         source = self.config["C_FILE"]
         clock_period = self.config["CLOCK_PERIOD"]
@@ -44,7 +45,7 @@ class CustomFlow(Classic):
         self,
         initial_state: State,
         **kwargs,
-    ) -> Tuple[State, List[Step]]:
+    ) -> tuple[State, list[Step]]:
 
         self.set_max_stage_count(len(self.Steps))
         self.start_stage("Bambu Stage")
@@ -53,6 +54,7 @@ class CustomFlow(Classic):
         self.end_stage()
 
         out = PPath(bambu_step.step_dir)
-        self.config = self.config.copy(VERILOG_FILES=[str(out / "icrc1.v"), str(out / "panda_libtech.v")])
+        name = self.config["DESIGN_NAME"]
+        self.config = self.config.copy(VERILOG_FILES=[str(out / (name + '.v')), str(out / "panda_libtech.v")])
         print(self.config)
         return super().run(initial_state, skip=["Bambu.Step"], **kwargs)
