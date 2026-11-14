@@ -22,8 +22,18 @@ class BambuStep(Step):
     ]
 
     def run(self, state_in: State, **kwargs) -> Tuple[ViewsUpdate, MetricsUpdate]:
+        name = self.config["DESIGN_NAME"]
         source = self.config["C_FILE"]
-        self.run_subprocess([bambu, source, "--top-fname=icrc1", "--clock-period=5", "-v4", "--disable-reg-init-value", "--clock-name=clk"], cwd=self.step_dir)
+        clock_period = self.config["CLOCK_PERIOD"]
+        clock_port = self.config["CLOCK_PORT"]
+        self.run_subprocess([
+            bambu, source,
+            f"--top-fname={name}",
+            f"--clock-period={clock_period}",
+            f"--clock-name={clock_port}",
+            "--disable-reg-init-value",
+            "-v4"
+        ], cwd=self.step_dir)
         time.sleep(2)
         return {}, {}
 
@@ -36,6 +46,7 @@ class CustomFlow(Classic):
         **kwargs,
     ) -> Tuple[State, List[Step]]:
 
+        self.set_max_stage_count(len(self.Steps))
         self.start_stage("Bambu Stage")
         bambu_step = BambuStep(self.config, state_in=initial_state)
         self.start_step(bambu_step)
