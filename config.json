@@ -1,0 +1,8 @@
+{
+  "DESIGN_NAME": "icrc1",
+  "C_FILE": "dir::icrc.c",
+  "VERILOG_FILES": [],
+  "CLOCK_PERIOD": 25,
+  "CLOCK_PORT": "clk",
+  "FP_CORE_UTIL": 25
+}
