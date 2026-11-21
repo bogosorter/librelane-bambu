@@ -22,9 +22,9 @@ class BambuStep(Step):
     ]
 
     def run(self, state_in: State, **kwargs) -> tuple[ViewsUpdate, MetricsUpdate]:
-        bambu = os.environ.get("BAMBUPATH")
+        bambu = os.environ.get("BAMBU_PATH")
         if bambu is None:
-            raise StepError("BAMBUPATH is not set")
+            raise StepError("BAMBU_PATH is not set (see readme)")
 
         print("got path", bambu)
 
