@@ -1,15 +1,15 @@
+import os
 import sys
 from pathlib import Path
 
 from librelane.common.types import Path as PathType
 from librelane.config.variable import Variable
 from librelane.state.state import State
-from librelane.steps.step import MetricsUpdate, Step, ViewsUpdate
+from librelane.steps.step import MetricsUpdate, Step, StepError, ViewsUpdate
 
 MAIN = sys.modules["__main__"].__file__
 assert MAIN is not None
 MAIN_DIR = Path(MAIN).resolve().parent
-BAMBU_PATH = MAIN_DIR / "bambu-executable/bambu-2026.11.AppImage"
 
 @Step.factory.register()
 class BambuStep(Step):
@@ -22,13 +22,19 @@ class BambuStep(Step):
     ]
 
     def run(self, state_in: State, **kwargs) -> tuple[ViewsUpdate, MetricsUpdate]:
+        bambu = os.environ.get("BAMBUPATH")
+        if bambu is None:
+            raise StepError("BAMBUPATH is not set")
+
+        print("got path", bambu)
+
         name = self.config["DESIGN_NAME"]
         source = self.config["C_FILE"]
         clock_period = self.config["CLOCK_PERIOD"]
         clock_port = self.config["CLOCK_PORT"]
 
         self.run_subprocess([
-            BAMBU_PATH, source,
+            bambu, source,
             f"--top-fname={name}",
             f"--clock-period={clock_period}",
             f"--clock-name={clock_port}",

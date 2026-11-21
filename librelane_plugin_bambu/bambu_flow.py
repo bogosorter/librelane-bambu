@@ -10,6 +10,7 @@ Classic = Flow.factory.get("Classic")
 assert Classic is not None
 
 
+@Flow.factory.register()
 class BambuFlow(Classic):
     Steps = [BambuStep] + Classic.Steps
 
@@ -34,4 +35,7 @@ class BambuFlow(Classic):
             str(output_directory / "panda_libtech.v")
         ])
 
-        return super().run(initial_state, skip=[bambu_step.id], **kwargs)
+        skip = list(kwargs.pop("skip", None) or [])
+        skip.append(bambu_step.id)
+
+        return super().run(initial_state, skip=skip, **kwargs)
