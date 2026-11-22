@@ -1,6 +1,7 @@
+import json
 from pathlib import Path
 
-from librelane.flows.flow import Flow
+from librelane.flows.flow import Flow, FlowError
 from librelane.state.state import State
 from librelane.steps.step import Step
 
@@ -13,6 +14,20 @@ assert Classic is not None
 @Flow.factory.register()
 class BambuFlow(Classic):
     Steps = [BambuStep] + Classic.Steps
+
+    def __init__(self, config, **kwargs):
+
+        config_path = Path(config[0])
+        with open(config_path) as f:
+            config = json.load(f)
+
+        if "VERILOG_FILES" in config:
+            raise FlowError("variable VERILOG_FILES should be set by the flow itself, please remove it from the configuration")
+
+        config["VERILOG_FILES"] = []
+
+        kwargs["design_dir"] = str(config_path.parent)
+        super().__init__(config, **kwargs)
 
     def run(
         self,
