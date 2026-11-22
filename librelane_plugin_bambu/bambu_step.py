@@ -1,38 +1,40 @@
 import os
-import sys
-from pathlib import Path
 
 from librelane.common.types import Path as PathType
 from librelane.config.variable import Variable
 from librelane.state.state import State
 from librelane.steps.step import MetricsUpdate, Step, StepError, ViewsUpdate
 
-MAIN = sys.modules["__main__"].__file__
-assert MAIN is not None
-MAIN_DIR = Path(MAIN).resolve().parent
 
 @Step.factory.register()
 class BambuStep(Step):
+    """
+    A custom LibreLane step that transforms C source files into Verilog using
+    Bambu.
+    - `C_FILE`: C source file for transformation
+    """
+
     id = "bambu"
     name = "Bambu"
     inputs = []
     outputs = []
     config_vars = [
-        Variable("C_FILE", PathType, "C source file for Bambu")
+        Variable("C_FILE", PathType, "C source file")
     ]
 
     def run(self, state_in: State, **kwargs) -> tuple[ViewsUpdate, MetricsUpdate]:
+        # This step is essentially a wrapper around Bambu. It requires an
+        # environment variable that points at the Bambu installation path
         bambu = os.environ.get("BAMBU_PATH")
         if bambu is None:
             raise StepError("environment variable BAMBU_PATH is not set (see installation instructions in readme)")
-
-        print("got path", bambu)
 
         name = self.config["DESIGN_NAME"]
         source = self.config["C_FILE"]
         clock_period = self.config["CLOCK_PERIOD"]
         clock_port = self.config["CLOCK_PORT"]
 
+        # Actually call Bambu
         self.run_subprocess([
             bambu, source,
             f"--top-fname={name}",

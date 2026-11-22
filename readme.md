@@ -1,6 +1,6 @@
 # LibreLane Plugin for Bambu
 
-This plugin augments LibreLane with a step from C to Verilog, as well as a flow that extends the classic flow with this step.
+This plugin augments LibreLane with a step from C to Verilog and a flow that integrates this step into the Classic flow.
 
 ## Installing
 
@@ -27,3 +27,7 @@ librelane example/config.json --flow BambuFlow
 ## Usage
 
 This plugin integrates naturally into LibreLane. The step and the flow are registered in the LibreLane registry, and you can use them through the command line or through a script. As usual in LibreLane, the entry for compilation is `config.json`. Instead of supplying the `VERILOG_FILES` variable, you should now set only the `C_FILE` variable.
+
+## Implementation
+
+This plugin is essentially a wrapper around Bambu. [`librelane_plugin_bambu/bambu_step.py`](librelane_plugin_bambu/bambu_step.py) provides the logic of dealing with bambu, while [`librelane_plugin_bambu/bambu_flow.py`](librelane_plugin_bambu/bambu_flow.py) is responsible for the various details required to integrate the step with the rest of the Bambu flow.
