@@ -21,6 +21,7 @@ class BambuFlow(Classic):
     Steps = [BambuStep] + Classic.Steps
 
     def __init__(self, config_path, **kwargs):
+
         # This flow receives as argument a tuple (configuration_path,), which
         # should be passed onto the __init__ of the Classic flow. Classic will
         # read this file and use its parent directory as the design directory.
