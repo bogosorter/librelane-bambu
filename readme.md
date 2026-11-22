@@ -26,4 +26,4 @@ librelane example/config.json --flow BambuFlow
 
 ## Usage
 
-This plugin integrates naturally into LibreLane. The step and the flow are registered in the LibreLane registry, and you can use them through the command line or through a script. As usual in LibreLane, the entry for compilation is `config.json`, which now also requires the `C_FILE` variable to be set, pointing to the file that should be compiled. For now, the `VERILOG_FILES` variable is still required by LibreLane, although it is not used. Please supply it with an empty array, as in `examples/config.json`.
+This plugin integrates naturally into LibreLane. The step and the flow are registered in the LibreLane registry, and you can use them through the command line or through a script. As usual in LibreLane, the entry for compilation is `config.json`. Instead of supplying the `VERILOG_FILES` variable, you should now set only the `C_FILE` variable.
